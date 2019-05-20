@@ -10,6 +10,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
 
     @Override
     public IndexerLambdaResponse handleRequest(IndexerLambdaRequest indexerLambdaRequest, Context context) {
+        // TODO add logging (using log4j: https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html)
         // 1. read file from s3 (https://s3.amazonaws.com/fannie-data/lucene-lambda-test/reviews.csv.gz)
         // see example: https://docs.aws.amazon.com/AmazonS3/latest/dev/RetrievingObjectUsingJava.html
         // and combine with: https://docs.oracle.com/javase/7/docs/api/java/util/zip/GZIPInputStream.html

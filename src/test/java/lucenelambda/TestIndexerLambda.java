@@ -2,9 +2,9 @@ package lucenelambda;
 
 import org.junit.Test;
 
-class TestIndexerLambda {
+public class TestIndexerLambda {
     @Test
-    private void TestIndexerLambda() {
+    public void TestIndexerLambda() {
         IndexerLambda lambda = new IndexerLambda();
         IndexerLambdaRequest request = new IndexerLambdaRequest();
         IndexerLambdaResponse response = lambda.handleRequest(request, LuceneLambdaUtils.generateContext());

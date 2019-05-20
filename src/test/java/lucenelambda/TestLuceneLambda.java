@@ -2,9 +2,9 @@ package lucenelambda;
 
 import org.junit.Test;
 
-class TestLuceneLambda {
+public class TestLuceneLambda {
     @Test
-    private void TestLuceneLambda() {
+    public void TestLuceneLambda() {
         LuceneLambda luceneLambda = new LuceneLambda();
         LuceneLambdaRequest request = new LuceneLambdaRequest();
         request.setQuery("test");
