@@ -9,6 +9,6 @@ class TestLuceneLambda {
         LuceneLambdaRequest request = new LuceneLambdaRequest();
         request.setQuery("test");
         LuceneLambdaResponse response = luceneLambda.handleRequest(request, LuceneLambdaUtils.generateContext());
-        // log output of response / assert
+        // log output of response / assert test cases
     }
 }

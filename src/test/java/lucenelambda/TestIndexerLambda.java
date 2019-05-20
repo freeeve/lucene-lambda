@@ -4,11 +4,10 @@ import org.junit.Test;
 
 class TestIndexerLambda {
     @Test
-    private void TestLuceneLambda() {
-        LuceneLambda luceneLambda = new LuceneLambda();
-        LuceneLambdaRequest request = new LuceneLambdaRequest();
-        request.setQuery("test");
-        LuceneLambdaResponse response = luceneLambda.handleRequest(request, LuceneLambdaUtils.generateContext());
-        // log output of response / assert
+    private void TestIndexerLambda() {
+        IndexerLambda lambda = new IndexerLambda();
+        IndexerLambdaRequest request = new IndexerLambdaRequest();
+        IndexerLambdaResponse response = lambda.handleRequest(request, LuceneLambdaUtils.generateContext());
+        // log output of response / assert test cases
     }
 }
