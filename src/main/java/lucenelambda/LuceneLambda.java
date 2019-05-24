@@ -50,12 +50,11 @@ class LuceneLambda implements RequestHandler<LuceneLambdaRequest, LuceneLambdaRe
         Query query = null;
         StandardQueryParser queryParserHelper = new StandardQueryParser();
         try {
-            query = queryParserHelper.parse("a AND b", "*");
+            query = queryParserHelper.parse(luceneLambdaRequest.getQuery(), "summary");
         } catch (QueryNodeException e) {
             e.printStackTrace();
         }
-        Analyzer analyzer = new StandardAnalyzer();
-        queryParserHelper.setAnalyzer(analyzer);
+        queryParserHelper.setAnalyzer(new StandardAnalyzer());
         try {
             TopDocs hits = searcher.search(query, 10);
             List<FineFoodReview> docList = new ArrayList<>();

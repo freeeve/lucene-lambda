@@ -74,7 +74,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 count++;
 
                 Document document = new Document();
-                document.add(new StringField("id", id.toString(), Field.Store.YES));
+                document.add(new StringField("id", id, Field.Store.YES));
                 document.add(new TextField("productId", productId, Field.Store.YES));
                 document.add(new TextField("userId", userId, Field.Store.YES));
                 document.add(new TextField("profileName", profileName, Field.Store.YES));
@@ -82,7 +82,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("userId", userId, Field.Store.YES));
                 document.add(new TextField("profileName", profileName, Field.Store.YES));
                 document.add(new TextField("helpfulnessNumerator", helpfulnessNumerator, Field.Store.YES));
-                document.add(new TextField("helpfulnessdenominator", helpfulnessDenominator, Field.Store.YES));
+                document.add(new TextField("helpfulnessDenominator", helpfulnessDenominator, Field.Store.YES));
                 document.add(new TextField("score", score, Field.Store.YES));
                 document.add(new TextField("time", time, Field.Store.YES));
                 document.add(new TextField("summary", summary, Field.Store.YES));
