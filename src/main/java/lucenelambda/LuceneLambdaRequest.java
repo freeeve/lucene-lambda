@@ -15,4 +15,20 @@ public class LuceneLambdaRequest {
     public void setQuery(String query) {
         this.query = query;
     }
+
+    public boolean isLocal() {
+        return local;
+    }
+
+    public void setLocal(boolean local) {
+        this.local = local;
+    }
+
+    public String getIndexPath() {
+        return indexPath;
+    }
+
+    public void setIndexPath(String indexPath) {
+        this.indexPath = indexPath;
+    }
 }
