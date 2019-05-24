@@ -2,55 +2,49 @@ package lucenelambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import javafx.scene.image.Image;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 class LuceneLambda implements RequestHandler<LuceneLambdaRequest, LuceneLambdaResponse> {
     private boolean isInitialized = false;
     IndexSearcher searcher = null;
+    IndexReader indexReader = null;
 
     @Override
     public LuceneLambdaResponse handleRequest(LuceneLambdaRequest luceneLambdaRequest, Context context) {
         // TODO add logging (using log4j: https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html)
         if (!this.isInitialized) {
             // 0. read index into a private class variable
-            IndexReader reader = null;
             try {
-                reader = DirectoryReader.open(FSDirectory.open(Paths.get(luceneLambdaRequest.getIndexPath())));
+                indexReader = DirectoryReader.open(FSDirectory.open(Paths.get(luceneLambdaRequest.getIndexPath())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            searcher = new IndexSearcher(reader);
-
-            //doPagingSearch(searcher, query);
+            searcher = new IndexSearcher(indexReader);
             this.isInitialized = true;
         }
         // 1. perform query
         // see examples: https://lucene.apache.org/core/8_1_0/demo/index.html#Searching_Files
         Query query = null;
-        QueryParser qp = new QueryParser("text", new StandardAnalyzer());
         try {
+            // get fields dynamically from the indexReader
+            String[] fields = new String[]{"id", "productId", "userId", "profileName", "helpfulnessNumerator", "helpfulnessDenominator", "score", "summary", "text"};
+            QueryParser qp = new MultiFieldQueryParser(fields, new StandardAnalyzer());
             query = qp.parse(luceneLambdaRequest.getQuery());
         } catch (Exception e) {
             e.printStackTrace();
