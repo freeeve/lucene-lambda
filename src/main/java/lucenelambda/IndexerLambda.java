@@ -78,7 +78,6 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("productId", productId, Field.Store.YES));
                 document.add(new TextField("userId", userId, Field.Store.YES));
                 document.add(new TextField("profileName", profileName, Field.Store.YES));
-                document.add(new StringField("id", id.toString(), Field.Store.YES));
                 document.add(new TextField("productId", productId, Field.Store.YES));
                 document.add(new TextField("userId", userId, Field.Store.YES));
                 document.add(new TextField("profileName", profileName, Field.Store.YES));
@@ -90,7 +89,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("text", text, Field.Store.YES));
                 documents.add(document);
             }
-
+            writer.deleteAll();
             writer.addDocuments(documents);
             writer.commit();
             writer.close();
