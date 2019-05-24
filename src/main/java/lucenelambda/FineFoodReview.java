@@ -6,12 +6,13 @@ package lucenelambda;
  * as the only kind of document we'll index/return as search result.
  */
 public class FineFoodReview {
-    
+
     // TODO add csv fields
     // Id,ProductId,UserId,ProfileName,HelpfulnessNumerator,HelpfulnessDenominator,Score,Time,Summary,Text
     //hashmap
     //get array list from GetObject
-    
+
+    /*
     HashMap<String, List<String>> food = new HashMap<String, List<Integer>>();
     ArrayList<String> begin = new ArrayList<String>();
     File file = new File("review.csv.txt"); 
@@ -36,7 +37,8 @@ public class FineFoodReview {
         }
         food.put(i,end);
     }
-    
+    */
+
 }
 
 
