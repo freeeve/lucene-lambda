@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -48,13 +49,12 @@ class LuceneLambda implements RequestHandler<LuceneLambdaRequest, LuceneLambdaRe
         // 1. perform query
         // see examples: https://lucene.apache.org/core/8_1_0/demo/index.html#Searching_Files
         Query query = null;
-        StandardQueryParser queryParserHelper = new StandardQueryParser();
+        QueryParser qp = new QueryParser("summary", new StandardAnalyzer());
         try {
-            query = queryParserHelper.parse(luceneLambdaRequest.getQuery(), "summary");
-        } catch (QueryNodeException e) {
+            query = qp.parse(luceneLambdaRequest.getQuery());
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        queryParserHelper.setAnalyzer(new StandardAnalyzer());
         try {
             TopDocs hits = searcher.search(query, 10);
             List<FineFoodReview> docList = new ArrayList<>();
