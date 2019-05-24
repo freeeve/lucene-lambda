@@ -46,46 +46,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         // see example: https://docs.aws.amazon.com/AmazonS3/latest/dev/RetrievingObjectUsingJava.html
         // and combine with: https://docs.oracle.com/javase/7/docs/api/java/util/zip/GZIPInputStream.html
         System.out.println("test");
-<<<<<<< HEAD
-		
-		private static final String INDEX_DIR = "c:review.csv";
-		Reader in = new FileReader("review.csv");
-		int count = 0;
-		IndexWriter writer = createWriter();
-        List<Document> documents = new ArrayList<>();
-		
-		//Getting the elements one by one: Iterable
-		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Id", "ProductId","UserId","ProfileName","HelpfulnessNumerator","HelpfulnessDenominator","Score","Time","Summary","Text").parse(in);
-		for (CSVRecord record : records) 
-		{
-			String id = record.get("Id");
-			String productId = record.get("ProductId");
-			String userId = record.get("UserId");
-			String profileName = record.get("ProfileName");
-			String helpfulnessNumerator = record.get("HelpfulnessNumerator");
-			String helpfulnessDenominator = record.get("HelpfulnessDenominator");
-			String score = record.get("Score");
-			String time = record.get("Time");
-			String summary = record.get("Summary");
-			String text = record.get("Text");
-			count++;
-			
-	        Document document = new Document();
-	        document.add(new StringField("id", id.toString() , Field.Store.YES));
-	        document.add(new TextField("productId", productId , Field.Store.YES));
-	        document.add(new TextField("userId", userId , Field.Store.YES));
-	        document.add(new TextField("profileName", profileName , Field.Store.YES));
-	        document.add(new TextField("helpfulnessNumerator", helpfulnessNumerator , Field.Store.YES));
-	        document.add(new TextField("helpfulnessdenominator", helpfulnessDenominator , Field.Store.YES));
-	        document.add(new TextField("score", score , Field.Store.YES));
-	        document.add(new TextField("time", time , Field.Store.YES));
-	        document.add(new TextField("summary", summary , Field.Store.YES));
-	        document.add(new TextField("text", text , Field.Store.YES));
-	        return document;
-		}
-    
 
-=======
 
         final String INDEX_DIR = "c:review.csv";
         Reader in = null;
@@ -114,12 +75,21 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("productId", productId, Field.Store.YES));
                 document.add(new TextField("userId", userId, Field.Store.YES));
                 document.add(new TextField("profileName", profileName, Field.Store.YES));
+                document.add(new StringField("id", id.toString(), Field.Store.YES));
+                document.add(new TextField("productId", productId, Field.Store.YES));
+                document.add(new TextField("userId", userId, Field.Store.YES));
+                document.add(new TextField("profileName", profileName, Field.Store.YES));
+                document.add(new TextField("helpfulnessNumerator", helpfulnessNumerator, Field.Store.YES));
+                document.add(new TextField("helpfulnessdenominator", helpfulnessDenominator, Field.Store.YES));
+                document.add(new TextField("score", score, Field.Store.YES));
+                document.add(new TextField("time", time, Field.Store.YES));
+                document.add(new TextField("summary", summary, Field.Store.YES));
+                document.add(new TextField("text", text, Field.Store.YES));
             }
             return new IndexerLambdaResponse();
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
->>>>>>> 21b6b89dc19327aa4aba1f67728b2495e48c9c48
         // 1b. parse csv
         // see reader example: https://www.baeldung.com/apache-commons-csv
 
@@ -130,8 +100,9 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         // see example: http://www.java67.com/2016/12/how-to-create-zip-file-in-java-zipentry-example.html
         return new IndexerLambdaResponse();
     }
-	private static IndexWriter createWriter() throws IOException
-    {
+
+    private static IndexWriter createWriter() throws IOException {
+        String INDEX_DIR = "/tmp/indextmp";
         FSDirectory dir = FSDirectory.open(Paths.get(INDEX_DIR));
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
         IndexWriter writer = new IndexWriter(dir, config);
