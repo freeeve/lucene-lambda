@@ -53,6 +53,8 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
 		private static final String INDEX_DIR = "c:review.csv";
 		Reader in = new FileReader("review.csv");
 		int count = 0;
+		IndexWriter writer = createWriter();
+        List<Document> documents = new ArrayList<>();
 		
 		//Getting the elements one by one: Iterable
 		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Id", "ProductId","UserId","ProfileName","HelpfulnessNumerator","HelpfulnessDenominator","Score","Time","Summary","Text").parse(in);
@@ -75,8 +77,16 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
 	        document.add(new TextField("productId", productId , Field.Store.YES));
 	        document.add(new TextField("userId", userId , Field.Store.YES));
 	        document.add(new TextField("profileName", profileName , Field.Store.YES));
+	        document.add(new TextField("helpfulnessNumerator", helpfulnessNumerator , Field.Store.YES));
+	        document.add(new TextField("helpfulnessdenominator", helpfulnessDenominator , Field.Store.YES));
+	        document.add(new TextField("score", score , Field.Store.YES));
+	        document.add(new TextField("time", time , Field.Store.YES));
+	        document.add(new TextField("summary", summary , Field.Store.YES));
+	        document.add(new TextField("text", text , Field.Store.YES));
 	        return document;
 		}
+    
+
         // 1b. parse csv
         // see reader example: https://www.baeldung.com/apache-commons-csv
 
@@ -86,5 +96,12 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         // 3. zip up resulting files / write index to s3 as zip
         // see example: http://www.java67.com/2016/12/how-to-create-zip-file-in-java-zipentry-example.html
         return new IndexerLambdaResponse();
+    }
+	private static IndexWriter createWriter() throws IOException
+    {
+        FSDirectory dir = FSDirectory.open(Paths.get(INDEX_DIR));
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(dir, config);
+        return writer;
     }
 }
