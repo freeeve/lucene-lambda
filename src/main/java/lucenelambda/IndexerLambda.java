@@ -51,8 +51,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         final String INDEX_DIR = "c:review.csv";
         Reader in = null;
         try {
-        	IndexWriter writer = createWriter();
-            List<Document> documents = new ArrayList<>();//new
+        	IndexWriter writer = createWriter();//new
             
             in = new FileReader("review.csv");
 
@@ -89,7 +88,7 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("summary", summary, Field.Store.YES));
                 document.add(new TextField("text", text, Field.Store.YES));
                 
-                writer.addDocuments(documents);//new
+                writer.addDocuments(document);//new
                 writer.commit();
                 writer.close();
             }
