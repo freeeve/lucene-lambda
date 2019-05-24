@@ -3,12 +3,7 @@ package lucenelambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import java.io.Reader;
-import java.io.FileReader;
-import java.io.BufferedReader;//new from here
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -16,7 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Date;//all the way to here
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.analysis.Analyzer;//new from here 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -45,20 +43,23 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         // 1. read file from s3 (https://s3.amazonaws.com/fannie-data/lucene-lambda-test/reviews.csv.gz)
         // see example: https://docs.aws.amazon.com/AmazonS3/latest/dev/RetrievingObjectUsingJava.html
         // and combine with: https://docs.oracle.com/javase/7/docs/api/java/util/zip/GZIPInputStream.html
-        System.out.println("test");
-
-
-        final String INDEX_DIR = "c:review.csv";
-        Reader in = null;
+        final String indexDir = indexerLambdaRequest.getIndexPath();
         try {
-        	IndexWriter writer = createWriter();//new
-            
-            in = new FileReader("review.csv");
-
+            IndexWriter writer = createWriter(indexDir);//new
+            InputStream inputStream = null;
+            if (indexerLambdaRequest.isLocal()) {
+                System.out.println("handling local read:" + indexerLambdaRequest.getInputPath());
+                inputStream = new FileInputStream(indexerLambdaRequest.getInputPath());
+            } else {
+                System.out.println("handling s3 read:" + indexerLambdaRequest.getInputPath());
+                // TODO add s3 handling
+            }
             int count = 0;
-
             //Getting the elements one by one: Iterable
+            GZIPInputStream zippedInputStream = new GZIPInputStream(inputStream);
+            Reader in = new InputStreamReader(zippedInputStream);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Id", "ProductId", "UserId", "ProfileName", "HelpfulnessNumerator", "HelpfulnessDenominator", "Score", "Time", "Summary", "Text").parse(in);
+            List<Document> documents = new ArrayList<>();
             for (CSVRecord record : records) {
                 String id = record.get("Id");
                 String productId = record.get("ProductId");
@@ -87,11 +88,12 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
                 document.add(new TextField("time", time, Field.Store.YES));
                 document.add(new TextField("summary", summary, Field.Store.YES));
                 document.add(new TextField("text", text, Field.Store.YES));
-                
-                writer.addDocuments(document);//new
-                writer.commit();
-                writer.close();
+                documents.add(document);
             }
+
+            writer.addDocuments(documents);
+            writer.commit();
+            writer.close();
             return new IndexerLambdaResponse();
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -107,9 +109,8 @@ public class IndexerLambda implements RequestHandler<IndexerLambdaRequest, Index
         return new IndexerLambdaResponse();
     }
 
-    private static IndexWriter createWriter() throws IOException {
-        String INDEX_DIR = "/tmp/indextmp";
-        FSDirectory dir = FSDirectory.open(Paths.get(INDEX_DIR));
+    private static IndexWriter createWriter(String indexPath) throws IOException {
+        FSDirectory dir = FSDirectory.open(Paths.get(indexPath));
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
         IndexWriter writer = new IndexWriter(dir, config);
         return writer;
