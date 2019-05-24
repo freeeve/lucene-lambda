@@ -49,13 +49,14 @@ class LuceneLambda implements RequestHandler<LuceneLambdaRequest, LuceneLambdaRe
         // 1. perform query
         // see examples: https://lucene.apache.org/core/8_1_0/demo/index.html#Searching_Files
         Query query = null;
-        QueryParser qp = new QueryParser("summary", new StandardAnalyzer());
+        QueryParser qp = new QueryParser("text", new StandardAnalyzer());
         try {
             query = qp.parse(luceneLambdaRequest.getQuery());
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
+            System.out.println("searching for " + query.toString());
             TopDocs hits = searcher.search(query, 10);
             List<FineFoodReview> docList = new ArrayList<>();
             for (ScoreDoc scoreDoc : hits.scoreDocs) {
@@ -73,6 +74,7 @@ class LuceneLambda implements RequestHandler<LuceneLambdaRequest, LuceneLambdaRe
                 fineFoodReview.setText(doc.getField("text").toString());
                 docList.add(fineFoodReview);
             }
+            System.out.println("search got " + docList.size() + " results");
             LuceneLambdaResponse response = new LuceneLambdaResponse(docList);
             return response;
         } catch (IOException e) {

@@ -17,7 +17,8 @@ public class TestLuceneLambda {
         // expect to get result count of 1
         assertEquals(1, response.getData().size());
         for (FineFoodReview review : response.getData()) {
-            if (!review.getSummary().contains("cherry")) {
+            System.out.println("got result" + review.getText());
+            if (!review.getText().contains("cherry")) {
                 fail();
             }
         }
